@@ -1,6 +1,3 @@
-Here's the README. Create README.md in the project root (D:\servicetracker), and delete HELP.md while you're at it — that's Initializr boilerplate.
-
-markdown
 # MTC Service Tracker
 
 A REST API for a tire and auto shop to track vehicles and their service history.
