@@ -57,6 +57,12 @@ export class VehicleList {
   }
 
   delete(id: number) {
+    const vehicle = this.vehicles().find(v => v.id === id);
+    if (!vehicle) return;
+
+    const message = `Delete ${vehicle.year} ${vehicle.make} ${vehicle.model}?`;
+    if (!confirm(message)) return;
+
     this.api.deleteVehicle(id).subscribe({
       next: () => {
         this.vehicles.update(list => list.filter(v => v.id !== id));
