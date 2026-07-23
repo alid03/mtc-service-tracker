@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../api.service';
-import { Vehicle, CreateVehicleRequest } from '../models';
+import { Vehicle, CreateVehicleRequest, ServiceRecord, CreateServiceRecordRequest } from '../models';
 
 @Component({
   selector: 'app-vehicle-list',
@@ -18,8 +18,11 @@ export class VehicleList {
   loading = signal(true);
   error = signal<string | null>(null);
   validationErrors = signal<Record<string, string>>({});
+  expandedVehicle = signal<number | null>(null);
+  history = signal<Record<number, ServiceRecord[]>>({});
 
   form: CreateVehicleRequest = this.emptyForm();
+  serviceForm: Record<number, CreateServiceRecordRequest> = {};
 
   ngOnInit() {
     this.load();
@@ -68,6 +71,50 @@ export class VehicleList {
         this.vehicles.update(list => list.filter(v => v.id !== id));
       },
       error: () => this.error.set('Could not delete that vehicle.')
+    });
+  }
+
+  toggleExpand(id: number) {
+    if (this.expandedVehicle() === id) {
+      this.expandedVehicle.set(null);
+    } else {
+      this.expandedVehicle.set(id);
+      this.loadHistory(id);
+      this.initServiceForm(id);
+    }
+  }
+
+  private loadHistory(id: number) {
+    this.api.getServiceHistory(id).subscribe({
+      next: records => {
+        this.history.update(h => ({ ...h, [id]: records }));
+      },
+      error: () => this.error.set('Could not load service history.')
+    });
+  }
+
+  private initServiceForm(id: number) {
+    this.serviceForm[id] = {
+      description: '',
+      serviceDate: new Date().toISOString().split('T')[0],
+      mileageAtService: 0,
+      cost: 0
+    };
+  }
+
+  logService(id: number) {
+    const form = this.serviceForm[id];
+    if (!form || !form.description) return;
+
+    this.api.logService(id, form).subscribe({
+      next: record => {
+        this.history.update(h => ({
+          ...h,
+          [id]: [record, ...(h[id] || [])]
+        }));
+        this.initServiceForm(id);
+      },
+      error: () => this.error.set('Could not log service record.')
     });
   }
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Vehicle, CreateVehicleRequest } from './models';
+import { Vehicle, CreateVehicleRequest, ServiceRecord, CreateServiceRecordRequest } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -18,5 +18,13 @@ export class ApiService {
 
   deleteVehicle(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  getServiceHistory(id: number): Observable<ServiceRecord[]> {
+    return this.http.get<ServiceRecord[]>(`${this.baseUrl}/${id}/history`);
+  }
+
+  logService(id: number, request: CreateServiceRecordRequest): Observable<ServiceRecord> {
+    return this.http.post<ServiceRecord>(`${this.baseUrl}/${id}/service`, request);
   }
 }

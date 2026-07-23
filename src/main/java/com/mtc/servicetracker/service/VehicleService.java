@@ -65,4 +65,9 @@ public class VehicleService {
         findById(vehicleId);
         return records.findByVehicleIdOrderByServiceDateDesc(vehicleId);
     }
+
+    public int getMileageAtLastService(Long vehicleId) {
+        List<ServiceRecord> history = historyFor(vehicleId);
+        return history.isEmpty() ? 0 : history.get(0).getMileageAtService();
+    }
 }

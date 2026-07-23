@@ -22,12 +22,15 @@ public class VehicleController {
 
     @GetMapping
     public List<VehicleResponse> list() {
-        return service.findAll().stream().map(VehicleResponse::from).toList();
+        return service.findAll().stream()
+                .map(v -> VehicleResponse.from(v, service.getMileageAtLastService(v.getId())))
+                .toList();
     }
 
     @GetMapping("/{id}")
     public VehicleResponse get(@PathVariable Long id) {
-        return VehicleResponse.from(service.findById(id));
+        var vehicle = service.findById(id);
+        return VehicleResponse.from(vehicle, service.getMileageAtLastService(id));
     }
 
     @PostMapping

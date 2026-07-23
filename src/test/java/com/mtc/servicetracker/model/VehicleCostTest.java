@@ -31,11 +31,19 @@ class VehicleCostTest {
     }
 
     @Test
+    @DisplayName("ElectricVehicle charges the flat base rate")
+    void electricUsesFlatRate() {
+        Vehicle tesla = new ElectricVehicle("Tesla", "Model 3", 2021, "EV123", 15000);
+        assertEquals(new BigDecimal("74.99"), tesla.calculateServiceCost());
+    }
+
+    @Test
     @DisplayName("Service interval differs by vehicle type")
     void intervalsDifferByType() {
         assertEquals(5000, new Car("Honda", "Civic", 2019, "A1", 0).getServiceIntervalMiles());
         assertEquals(7500, new Truck("Ford", "F-150", 2016, "B2", 0).getServiceIntervalMiles());
         assertEquals(3000, new Motorcycle("Yamaha", "MT-07", 2021, "C3", 0).getServiceIntervalMiles());
+        assertEquals(10000, new ElectricVehicle("Tesla", "Model 3", 2021, "EV123", 0).getServiceIntervalMiles());
     }
 
     @Test

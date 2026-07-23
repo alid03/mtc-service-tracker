@@ -8,6 +8,8 @@ export interface Vehicle {
   mileage: number;
   serviceCost: number;
   serviceIntervalMiles: number;
+  mileageAtLastService: number;
+  isDueForService: boolean;
 }
 
 export interface CreateVehicleRequest {
@@ -17,4 +19,19 @@ export interface CreateVehicleRequest {
   year: number;
   licensePlate: string;
   mileage: number;
+}
+
+export interface ServiceRecord {
+  id: number;
+  description: string;
+  serviceDate: string;
+  mileageAtService: number;
+  cost: number;
+}
+
+export interface CreateServiceRecordRequest {
+  description: string;
+  serviceDate: string;
+  mileageAtService: number;
+  cost: number;
 }

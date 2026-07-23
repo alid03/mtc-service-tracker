@@ -13,13 +13,13 @@
         </select>
       </label>
 
-      <label>Make <input name="make" [(ngModel)]="form.make" required /></label>
-      <label>Model <input name="model" [(ngModel)]="form.model" required /></label>
+      <label>Make <input name="make" [(ngModel)]="form.make" placeholder="Ford" required /></label>
+      <label>Model <input name="model" [(ngModel)]="form.model" placeholder="F-150" required /></label>
     </div>
 
     <div class="row">
       <label>Year <input name="year" type="number" [(ngModel)]="form.year" required /></label>
-      <label>Plate <input name="licensePlate" [(ngModel)]="form.licensePlate" required /></label>
+      <label>Plate <input name="licensePlate" [(ngModel)]="form.licensePlate" placeholder="ABC-1234" required /></label>
       <label>Mileage <input name="mileage" type="number" [(ngModel)]="form.mileage" required /></label>
     </div>
 
@@ -56,15 +56,56 @@
       </thead>
       <tbody>
         @for (v of vehicles(); track v.id) {
-          <tr>
+          <tr (click)="toggleExpand(v.id)" class="clickable">
             <td><span class="tag">{{ v.type }}</span></td>
-            <td>{{ v.year }} {{ v.make }} {{ v.model }}</td>
+            <td>{{ v.year }} {{ v.make }} {{ v.model }} @if (v.isDueForService) { <span class="overdue">Overdue</span> }</td>
             <td class="plate">{{ v.licensePlate }}</td>
             <td class="num">{{ v.mileage | number }}</td>
-            <td class="num cost">{{ v.serviceCost | currency:'USD' }}</td>
+            <td class="num">{{ v.serviceCost | currency:'USD' }}</td>
             <td class="num muted">{{ v.serviceIntervalMiles | number }} mi</td>
-            <td class="actions"><button type="button" class="delete-btn" (click)="delete(v.id)">×</button></td>
+            <td class="actions"><button type="button" class="delete-btn" (click)="delete(v.id); $event.stopPropagation()">×</button></td>
           </tr>
+          @if (expandedVehicle() === v.id) {
+            <tr class="expanded-row">
+              <td colspan="7">
+                <div class="history-section">
+                  @if ((history()[v.id] || []).length > 0) {
+                    <table class="history-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Description</th>
+                          <th class="num">Mileage</th>
+                          <th class="num">Cost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (record of history()[v.id]; track record.id) {
+                          <tr>
+                            <td class="date">{{ record.serviceDate }}</td>
+                            <td>{{ record.description }}</td>
+                            <td class="num">{{ record.mileageAtService | number }}</td>
+                            <td class="num">{{ record.cost | currency:'USD' }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  } @else {
+                    <p class="muted">No service records yet.</p>
+                  }
+                  <form class="service-form" (ngSubmit)="logService(v.id)">
+                    <div class="form-row">
+                      <input type="text" [(ngModel)]="serviceForm[v.id].description" name="desc" placeholder="Description" required />
+                      <input type="date" [(ngModel)]="serviceForm[v.id].serviceDate" name="date" required />
+                      <input type="number" [(ngModel)]="serviceForm[v.id].mileageAtService" name="mileage" placeholder="Mileage" required />
+                      <input type="number" [(ngModel)]="serviceForm[v.id].cost" name="cost" placeholder="Cost" step="0.01" required />
+                      <button type="submit" class="submit-btn">Log</button>
+                    </div>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>
