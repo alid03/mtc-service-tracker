@@ -1,0 +1,72 @@
+<section class="panel">
+  <h2>Add a vehicle</h2>
+
+  <form (ngSubmit)="submit()">
+    <div class="row">
+      <label>
+        Type
+        <select name="type" [(ngModel)]="form.type" required>
+          <option value="CAR">Car</option>
+          <option value="TRUCK">Truck</option>
+          <option value="MOTORCYCLE">Motorcycle</option>
+          <option value="ELECTRIC">Electric</option>
+        </select>
+      </label>
+
+      <label>Make <input name="make" [(ngModel)]="form.make" required /></label>
+      <label>Model <input name="model" [(ngModel)]="form.model" required /></label>
+    </div>
+
+    <div class="row">
+      <label>Year <input name="year" type="number" [(ngModel)]="form.year" required /></label>
+      <label>Plate <input name="licensePlate" [(ngModel)]="form.licensePlate" required /></label>
+      <label>Mileage <input name="mileage" type="number" [(ngModel)]="form.mileage" required /></label>
+    </div>
+
+    <button type="submit" [disabled]="!isFormValid()">Add vehicle</button>
+  </form>
+
+  @if ((validationErrors() | keyvalue).length > 0) {
+    <div class="validation-errors">
+      @for (error of (validationErrors() | keyvalue); track error.key) {
+        <p class="error">{{ error.key }}: {{ error.value }}</p>
+      }
+    </div>
+  }
+</section>
+
+<section class="panel">
+  <h2>Fleet</h2>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (vehicles().length === 0) {
+    <p class="muted">No vehicles yet.</p>
+  } @else {
+    <table>
+      <thead>
+      <tr>
+        <th>Type</th><th>Vehicle</th><th>Plate</th>
+        <th class="num">Mileage</th><th class="num">Service</th><th class="num">Interval</th><th></th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (v of vehicles(); track v.id) {
+          <tr>
+            <td><span class="tag">{{ v.type }}</span></td>
+            <td>{{ v.year }} {{ v.make }} {{ v.model }}</td>
+            <td class="plate">{{ v.licensePlate }}</td>
+            <td class="num">{{ v.mileage | number }}</td>
+            <td class="num cost">{{ v.serviceCost | currency:'USD' }}</td>
+            <td class="num muted">{{ v.serviceIntervalMiles | number }} mi</td>
+            <td class="actions"><button type="button" class="delete-btn" (click)="delete(v.id)">×</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>

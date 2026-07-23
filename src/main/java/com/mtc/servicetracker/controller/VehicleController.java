@@ -2,12 +2,14 @@ package com.mtc.servicetracker.controller;
 
 import com.mtc.servicetracker.dto.*;
 import com.mtc.servicetracker.service.VehicleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/vehicles")
 public class VehicleController {
@@ -29,9 +31,15 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<VehicleResponse> create(@RequestBody CreateVehicleRequest request) {
+    public ResponseEntity<VehicleResponse> create(@Valid @RequestBody CreateVehicleRequest request) {
         VehicleResponse created = VehicleResponse.from(service.create(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/service")

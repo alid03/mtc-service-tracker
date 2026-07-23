@@ -39,9 +39,18 @@ public class VehicleService {
                     request.licensePlate(), request.mileage());
             case "MOTORCYCLE" -> new Motorcycle(request.make(), request.model(), request.year(),
                     request.licensePlate(), request.mileage());
+            case "ELECTRIC" -> new ElectricVehicle(request.make(), request.model(), request.year(),
+                    request.licensePlate(), request.mileage());
             default -> throw new IllegalArgumentException("Unknown vehicle type: " + request.type());
         };
         return vehicles.save(vehicle);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Vehicle vehicle = findById(id);
+        records.deleteByVehicleId(vehicle.getId());
+        vehicles.delete(vehicle);
     }
 
     @Transactional
