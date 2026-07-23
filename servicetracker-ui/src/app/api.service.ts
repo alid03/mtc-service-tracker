@@ -6,7 +6,7 @@ import { Vehicle, CreateVehicleRequest } from './models';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:8082/api/vehicles';
+  private baseUrl = 'http://localhost:8080/api/vehicles';
 
   getVehicles(): Observable<Vehicle[]> {
     return this.http.get<Vehicle[]>(this.baseUrl);
